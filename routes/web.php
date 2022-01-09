@@ -15,8 +15,8 @@ use App\Http\Controllers\TekoController;
 
 Route::get('/', [TekoController::class, 'index']);
 Route::get('/{id}', [TekoController::class, 'statistics']);
-Route::get('/{id}/{mag}', [TekoController::class, 'grupa']);
+Route::get('/{id}/{mag}', [TekoController::class, 'torg3']);
 Route::get('/{id}/{mag}/{grupa}', [TekoController::class, 'TM']);
-Route::get('/{id}/{mag}/{grupa}/{TM}', [TekoController::class, 'tovar']);
+Route::get('/{id}/{mag}/{grupa}/{TM}', [TekoController::class, 'product']);
 Route::get('/{id}/{mag}/{grupa}/{TM}/{article}', [TekoController::class, 'remainder']);
 

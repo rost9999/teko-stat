@@ -24,44 +24,56 @@
 <body>
 <?php
 $months = [
-    '1'=>'Січень',
-    '2'=>'Лютий',
-    '3'=>'Березень',
-    '4'=>'Квітень',
-    '5'=>'Травень',
-    '6'=>'Червень',
-    '7'=>'Липень',
-    '8'=>'Серпень',
-    '9'=>'Вересень',
-    '10'=>'Жовтень',
-    '11'=>'Листопад',
-//    '12'=>'Грудень'
+    'previousCount' => 'Попередній місяць',
+    'currentCount'  => 'Вибраний місяць',
+    'name'          => 'Назва',
+    'diff'          => 'Різниця',
+    'article'       => 'Артикул',
+    '1'             => 'Січень',
+    '2'             => 'Лютий',
+    '3'             => 'Березень',
+    '4'             => 'Квітень',
+    '5'             => 'Травень',
+    '6'             => 'Червень',
+    '7'             => 'Липень',
+    '8'             => 'Серпень',
+    '9'             => 'Вересень',
+    '10'            => 'Жовтень',
+    '11'            => 'Листопад',
+    //    '12'=>'Грудень'
 ]
-    ?>
+?>
 <div class="container">
     <div class="row">
-        <h1>Теко-Трейд 2021 рік</h1>
+        <h1><a href="/">Теко-Трейд 2021 рік</a></h1>
+                <h3 style="display: inline;">{{$month}} {{$month}}</h3>
+        <h2><a href="{{back()->getTargetUrl()}}">Назад</a></h2>
     </div>
     <div class="row">
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Місяць</th>
+                @foreach($data[0] as $key => $value)
+                    <th scope="col">{{$months[$key]}}</th>
+                @endforeach
             </tr>
             </thead>
             <tbody>
             @foreach($data as $key => $value)
-<!--                --><?php //xdebug_break(); ?>
                 <tr>
-                    <th scope="row">{{$key}}</th>
-                    <td>$value[0]</td>
+                    <?php $link = str_replace(' ', '+', current($value));
+                    if (isset($value['article'])) {
+                        $link = $value['article'];
+                    }?>
+                    <td><a href="{{$GLOBALS["_SERVER"]["REQUEST_URI"].'/'.$link}}">{{$value['name']}}</a></td>
+                    <td>{{$value['previousCount']}}</td>
+                    <td>{{$value['currentCount']}}</td>
+                    <td>{{$value['diff']}}</td>
                 </tr>
             @endforeach
             </tbody>
         </table>
     </div>
 </div>
-
 </body>
 </html>

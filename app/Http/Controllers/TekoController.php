@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use Illuminate\Http\Request;
-use App\Models\Teko;
+use App\Models\Remainder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -17,93 +16,178 @@ class TekoController extends Controller
 
     public function statistics(int $month)
     {
-        $current = Order::query()->select('mag', DB::raw('SUM(count) as count'))
-            ->whereYear('date', 2021)
-            ->whereMonth('date', $month)
-            ->groupBy('mag')
+        $months = $this->getMonths($month);
+        $current = Order::query()->select(
+            'shop as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->where('date', 'like', "2021-$months[0]%")
+            ->groupBy('shop')
             ->get()->toArray();
-        $previous = Order::query()->select('mag', DB::raw('SUM(count) as count'))
-            ->whereYear('date', 2021)
-            ->whereMonth('date', $month - 1)
-            ->groupBy('mag')
+
+        $previous = Order::query()->select(
+            'shop as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->where('date', 'like', "2021-$months[1]%")
+            ->groupBy('name')
             ->get()->toArray();
         $data = $this->getStatistics($current, $previous);
 
-        return view('old-teko', compact('data'));
+        return view('teko', compact('data', 'month'));
     }
 
-    public function grupa(int $month, strting $shop)
+    public function torg3(int $month, string $shop)
     {
-        $data = DB::select('SELECT `torg3` as `Група`, ROUND(sum(`count`),2) as `Різниця в К-сть` FROM `tekos` WHERE `mounth` = :month and `mag` = :mag GROUP BY `torg3` ORDER BY `Різниця в К-сть`', ['month' => $month, 'mag' => $shop]);
-        $data = Order::query()->select('torg3', DB::raw('SUM(count)'))
-            ->join('torg3',)
-            ->whereYear('date', 2021)
-            ->whereMonth('date', $month)
+        $months = $this->getMonths($month);
+        $shop = str_replace('+', ' ', $shop);
+        $current = Order::query()->select(
+            'torg3 as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->join('torg3', 'torg3.article', '=', 'orders.article')
+            ->where('date', 'like', "2021-$months[0]%")
             ->where('shop', $shop)
-            ->groupBy('torg3');
+            ->groupBy('torg3')
+            ->get()->toArray();
 
+        $previous = Order::query()->select(
+            'torg3 as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->join('torg3', 'torg3.article', '=', 'orders.article')
+            ->where('date', 'like', "2021-$months[1]%")
+            ->where('shop', $shop)
+            ->groupBy('torg3')
+            ->get()->toArray();
+        $data = $this->getStatistics($current, $previous);
 
-
-        return view('teko', compact('data'));
+        return view('teko', compact('data', 'month', 'shop'));
     }
 
-    public function TM($month, $mag, $grupa)
+    public function TM($month, $shop, $torg3)
     {
-        $grupa = str_replace('+', ' ', $grupa);
-        $data = DB::select('SELECT `TM` as `Торгова Марка`, ROUND(sum(`count`),2) as `Різниця в К-сть` FROM `tekos` WHERE `mounth` = :month and `mag` = :mag and `torg3` = :grupa GROUP BY `TM` ORDER BY `Різниця в К-сть`', ['month' => $month, 'mag' => $mag, 'grupa' => $grupa]);
-        return view('teko', compact('data'));
+        $months = $this->getMonths($month);
+        $torg3 = str_replace('+', ' ', $torg3);
+        $current = Order::query()->select(
+            'tm as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->join('torg3', 'torg3.article', '=', 'orders.article')
+            ->where('date', 'like', "2021-$months[0]%")
+            ->where('shop', $shop)
+            ->where('torg3', $torg3)
+            ->groupBy('tm')
+            ->get()->toArray();
+        $previous = Order::query()->select(
+            'tm as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->join('torg3', 'torg3.article', '=', 'orders.article')
+            ->where('date', 'like', "2021-$months[1]%")
+            ->where('shop', $shop)
+            ->where('torg3', $torg3)
+            ->groupBy('tm')
+            ->get()->toArray();
+        $data = $this->getStatistics($current, $previous);
+
+
+        return view('teko', compact('data', 'month', 'shop', 'torg3'));
     }
 
-    public function tovar($month, $mag, $grupa, $tm)
+    public function product($month, $shop, $torg3, $tm)
     {
-        $grupa = str_replace('+', ' ', $grupa);
+        $months = $this->getMonths($month);
+        $shop = str_replace('+', ' ', $shop);
+        $torg3 = str_replace('+', ' ', $torg3);
         $tm = str_replace('+', ' ', $tm);
-        $data = DB::select('SELECT `name` as `Назва`, ROUND(sum(`count`),2) as `Різниця в К-сть`, `article` FROM `tekos` WHERE `mounth` = :month and `mag` = :mag and `torg3` = :grupa and `TM` = :TM GROUP BY `article` ORDER BY `Різниця в К-сть`', ['month' => $month, 'mag' => $mag, 'grupa' => $grupa, 'TM' => $tm]);
-        return view('teko', compact('data'));
+        $current = Order::query()->select(
+            'orders.article', 'torg3.name',
+            DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->join('torg3', 'torg3.article', '=', 'orders.article')
+            ->where('date', 'like', "2021-$months[0]%")
+            ->where('shop', $shop)
+            ->where('torg3', $torg3)
+            ->where('tm', $tm)
+            ->groupBy('orders.article', 'torg3.name')
+            ->get()->toArray();
+        $previous = Order::query()->select(
+            'orders.article', 'torg3.name',
+            DB::raw('ROUND(SUM(`count`), 2) as count')
+        )
+            ->join('torg3', 'torg3.article', '=', 'orders.article')
+            ->where('date', 'like', "2021-$months[1]%")
+            ->where('shop', $shop)
+            ->where('torg3', $torg3)
+            ->where('tm', $tm)
+            ->groupBy('orders.article', 'torg3.name')
+            ->get()->toArray();
+        $data = $this->getStatistics($current, $previous);
+
+
+        return view('teko', compact('data', 'month', 'shop', 'torg3', 'tm'));
+
     }
 
-    public function remainder($month, $mag, $grupa, $tm, $article)
+    public function remainder($month, $shop, $torg3, $tm, $article)
     {
-        $month = strval($month);
-        if (strlen($month) < 2) {
-            $month = '0' . $month;
-        }
-        $date = '%' . $month . '.2021';
-        $data = DB::select('SELECT `date`, ROUND(`count`,2) as `count`  FROM remainders WHERE `mag` = :mag AND `article` = :article AND `date` LIKE :date ORDER BY `date`', ['mag' => $mag, 'article' => $article, 'date' => $date]);
-        $newdata = [];
-        foreach ($data as $d) {
-            $newdata[substr($d->date, 0, 2)] = $d->count;
-        }
-        $data = $newdata;
-        return view('remainder', compact('data'));
+        $months = $this->getMonths($month);
+        $shop = str_replace('+', ' ', $shop);
+        $data = Remainder::query()->select(
+            'date', 'count'
+        )
+            ->join('torg3', 'torg3.article', '=', 'remainders.article')
+            ->where('date', 'like', "2021-$months[0]%")
+            ->where('shop', $shop)
+            ->where('remainders.article', $article)
+            ->get()->toArray();
+        return view(
+            'remainder',
+            compact('data', 'month', 'shop', 'torg3', 'tm', 'article')
+        );
     }
 
-    private function getStatistics(array $current, array $previous): array
-    {
+    private function getStatistics(array $current, array $previous
+    ): array {
         $data = [];
-        $shops = Arr::pluck(array_merge($current, $previous), 'mag');
+        $names = array_unique(Arr::pluck($current + $previous, 'name'));
 
-        foreach ($shops as $shop) {
-            $currentStatistics = Arr::first($current, function ($value, $key) use ($shop) {
-                return $value['mag'] = $shop;
-            });
-            $previousStatistics = Arr::first($previous, function ($value, $key) use ($shop) {
-                return $value['mag'] = $shop;
-            });
-            $diff = $currentStatistics['count'] - $previousStatistics['count'];
-
+        foreach ($names as $name) {
+            $currentStatistics = Arr::first(
+                $current, function ($value, $key) use ($name) {
+                return $value['name'] == $name;
+            }
+            );
+            $previousStatistics = Arr::first(
+                $previous, function ($value, $key) use ($name) {
+                return $value['name'] == $name;
+            }
+            );
+            $currentStatistics['count'] = $currentStatistics['count'] ?? 0;
+            $previousStatistics['count'] = $previousStatistics['count'] ?? 0;
             $data[] = [
-                'shop' => $shop,
-                'currentCount' => $currentStatistics['count'],
+                'name' => $name,
                 'previousCount' => $previousStatistics['count'],
-                'diff' => $diff
+                'currentCount' => $currentStatistics['count'],
+                'diff' => round(
+                    $previousStatistics['count']
+                    - $currentStatistics['count'], 2
+                ),
+                'article' => $currentStatistics['article'] ?? null
             ];
         }
 
-        uasort($data, function ($item1, $item2) {
+
+        usort($data, function ($item1, $item2) {
             return $item1["diff"] <=> $item2["diff"];
         });
 
         return $data;
+    }
+
+    private function getMonths(int $month): array
+    {
+        $previous = strval($month - 1);
+        $previous = strlen($previous) > 1 ? $previous
+            : '0'.$previous;
+        $current = strval($month);
+        $current = strlen($current) > 1 ? $current
+            : '0'.$current;
+        return [$current, $previous];
     }
 }

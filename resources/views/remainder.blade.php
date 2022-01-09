@@ -23,19 +23,10 @@
 </head>
 <body>
 <?php
-$months = [
-    '1' => 'Січень',
-    '2' => 'Лютий',
-    '3' => 'Березень',
-    '4' => 'Квітень',
-    '5' => 'Травень',
-    '6' => 'Червень',
-    '7' => 'Липень',
-    '8' => 'Серпень',
-    '9' => 'Вересень',
-    '10' => 'Жовтень',
-    '11' => 'Листопад',
-//    '12'=>'Грудень'
+$links = [
+    'date'  => 'День',
+    'name'  => 'Назва',
+    'count' => 'Залишок'
 ]
 ?>
 <div class="container">
@@ -47,19 +38,18 @@ $months = [
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th scope="col">День</th>
-                @foreach($data as $key => $d)
-                    <th scope="col">{{$key}}</th>
+                @foreach($data[0] as $key => $value)
+                    <th scope="col">{{$links[$key]}}</th>
                 @endforeach
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Залишок</td>
-                @foreach($data as $key => $d)
-                    <td>{{$d}}</td>
-                @endforeach
-            </tr>
+            @foreach($data as $key => $d)
+                <tr>
+                    <td>{{$d['date']}}</td>
+                    <td>{{$d['count']}}</td>
+                </tr>
+            @endforeach
             </tbody>
         </table>
     </div>
