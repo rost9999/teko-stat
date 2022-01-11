@@ -64,6 +64,7 @@ class TekoController extends Controller
     public function TM($month, $shop, $torg3)
     {
         $months = $this->getMonths($month);
+        $shop = str_replace('+', ' ', $shop);
         $torg3 = str_replace('+', ' ', $torg3);
         $current = Order::query()->select(
             'tm as name', DB::raw('ROUND(SUM(`count`), 2) as count')
@@ -135,6 +136,7 @@ class TekoController extends Controller
             ->where('date', 'like', "2021-$months[0]%")
             ->where('shop', $shop)
             ->where('remainders.article', $article)
+            ->orderBy('date')
             ->get()->toArray();
         return view(
             'remainder',
@@ -165,8 +167,8 @@ class TekoController extends Controller
                 'previousCount' => $previousStatistics['count'],
                 'currentCount' => $currentStatistics['count'],
                 'diff' => round(
-                    $previousStatistics['count']
-                    - $currentStatistics['count'], 2
+                    $currentStatistics['count']
+                    - $previousStatistics['count'], 2
                 ),
                 'article' => $currentStatistics['article'] ?? null
             ];
