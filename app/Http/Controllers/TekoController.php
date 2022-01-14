@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Remainder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -14,23 +15,54 @@ class TekoController extends Controller
         return view('index');
     }
 
+    public function tempFunc()
+    {
+        $data = DB::select("SELECT date,
+       incoming.article        as art1,
+       tm,
+       name,
+       ROUND((sum / count), 2) as price,
+       (SELECT ROUND((sum / count), 2) as price
+        FROM incoming
+        WHERE article = art1
+          and shop <> 'ТЕРНОПІЛЬ'
+          and contractor <> 'ЕКСПАНСІЯ ТОВ'
+          and date BETWEEN date - INTERVAL 3 day
+            and date + INTERVAL 3 day
+        LIMIT 1) as price2, contractor
+FROM incoming
+         JOIN torg3 t on incoming.article = t.article
+WHERE shop = 'ТЕРНОПІЛЬ'
+  and `contractor` = 'ЕКСПАНСІЯ ТОВ'
+ORDER By `date`");
+        $data = array_filter($data, function ($d) {
+            return $d->price2 != 0;
+        });
+        return view('index2', compact('data'));
+    }
+
     public function statistics(int $month)
     {
-        $months = $this->getMonths($month);
-        $current = Order::query()->select(
-            'shop as name', DB::raw('ROUND(SUM(`count`), 2) as count')
-        )
-            ->where('date', 'like', "2021-$months[0]%")
-            ->groupBy('shop')
-            ->get()->toArray();
+        if (Cache::has('statistics-' . $month)) {
+            $data = Cache::get('statistics-' . $month);
+        } else {
+            $months = $this->getMonths($month);
+            $current = Order::query()->select(
+                'shop as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+            )
+                ->where('date', 'like', "2021-$months[0]%")
+                ->groupBy('shop')
+                ->get()->toArray();
 
-        $previous = Order::query()->select(
-            'shop as name', DB::raw('ROUND(SUM(`count`), 2) as count')
-        )
-            ->where('date', 'like', "2021-$months[1]%")
-            ->groupBy('name')
-            ->get()->toArray();
-        $data = $this->getStatistics($current, $previous);
+            $previous = Order::query()->select(
+                'shop as name', DB::raw('ROUND(SUM(`count`), 2) as count')
+            )
+                ->where('date', 'like', "2021-$months[1]%")
+                ->groupBy('name')
+                ->get()->toArray();
+            $data = $this->getStatistics($current, $previous);
+            Cache::put('statistics-' . $month, $data);
+        }
 
         return view('teko', compact('data', 'month'));
     }
@@ -145,7 +177,8 @@ class TekoController extends Controller
     }
 
     private function getStatistics(array $current, array $previous
-    ): array {
+    ): array
+    {
         $data = [];
         $names = array_unique(Arr::pluck($current + $previous, 'name'));
 
@@ -186,10 +219,10 @@ class TekoController extends Controller
     {
         $previous = strval($month - 1);
         $previous = strlen($previous) > 1 ? $previous
-            : '0'.$previous;
+            : '0' . $previous;
         $current = strval($month);
         $current = strlen($current) > 1 ? $current
-            : '0'.$current;
+            : '0' . $current;
         return [$current, $previous];
     }
 }

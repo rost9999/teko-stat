@@ -32,8 +32,8 @@ def work(i):
     mydb.commit()
     print(mycursor.rowcount, "was inserted.")
 
-work('00')
-for i in range(1,11+1):
+work('00').
+for i in range(1,12+1):
     work(i)
 
 print('work done')
