@@ -41,6 +41,14 @@ ORDER By `date`");
         return view('index2', compact('data'));
     }
 
+    public function outStock()
+    {
+        $mags = Order::select('shop')->distinct()->get()->toArray();
+        $data = $mags;
+        return view('index2', compact('data'));
+
+    }
+
     public function statistics(int $month)
     {
         if (Cache::has('statistics-' . $month)) {

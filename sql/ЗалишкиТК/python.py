@@ -42,7 +42,7 @@ def work(i):
     print(mycursor.rowcount, "was inserted.")
 
 
-for i in range(1, 18+1):
+for i in range(1, 22+1):
     work(i)
 
 print('done')

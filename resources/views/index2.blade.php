@@ -9,24 +9,15 @@
             <thead>
             <tr>
                 <th scope="col">Дата</th>
-                <th scope="col">Артикул</th>
-                <th scope="col">ТМ</th>
-                <th scope="col">Назва</th>
-                <th scope="col">Ціна зливу</th>
-                <th scope="col">Контрагент</th>
-                <th scope="col">Ціна Контрагента</th>
+                @foreach($data[0] as $key)
+                    <th scope="col">{{$key}}</th>
+                @endforeach
             </tr>
             </thead>
             <tbody>
-            @foreach($ndata as $d)
+            @foreach($data as $key->$value)
                 <tr>
-                    <td>{{$d->date}}</td>
-                    <td>{{$d->article}}</td>
-                    <td>{{$d->tm}}</td>
-                    <td>{{$d->name}}</td>
-                    <td>{{$d->price}}</td>
-                    <td>{{$d->contractor}}</td>
-                    <td>{{$d->price2}}</td>
+                    <td>{{$key , $value}}</td>
                 </tr>
             @endforeach
             </tbody>

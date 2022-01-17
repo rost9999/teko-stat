@@ -13,7 +13,8 @@ use App\Http\Controllers\TekoController;
 |
 */
 
-Route::get('/temp', [TekoController::class, 'tempFunc']);
+Route::get('/outStock', [TekoController::class, 'outStock']);
+Route::get('/temp2', [TekoController::class, 'tempFunc']);
 Route::get('/', [TekoController::class, 'index']);
 Route::get('/{id}', [TekoController::class, 'statistics']);
 Route::get('/{id}/{mag}', [TekoController::class, 'torg3']);
