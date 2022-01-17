@@ -15,40 +15,6 @@ class TekoController extends Controller
         return view('index');
     }
 
-    public function tempFunc()
-    {
-        $data = DB::select("SELECT date,
-       incoming.article        as art1,
-       tm,
-       name,
-       ROUND((sum / count), 2) as price,
-       (SELECT ROUND((sum / count), 2) as price
-        FROM incoming
-        WHERE article = art1
-          and shop <> 'ТЕРНОПІЛЬ'
-          and contractor <> 'ЕКСПАНСІЯ ТОВ'
-          and date BETWEEN date - INTERVAL 3 day
-            and date + INTERVAL 3 day
-        LIMIT 1) as price2, contractor
-FROM incoming
-         JOIN torg3 t on incoming.article = t.article
-WHERE shop = 'ТЕРНОПІЛЬ'
-  and `contractor` = 'ЕКСПАНСІЯ ТОВ'
-ORDER By `date`");
-        $data = array_filter($data, function ($d) {
-            return $d->price2 != 0;
-        });
-        return view('index2', compact('data'));
-    }
-
-    public function outStock()
-    {
-        $mags = Order::select('shop')->distinct()->get()->toArray();
-        $data = $mags;
-        return view('index2', compact('data'));
-
-    }
-
     public function statistics(int $month)
     {
         if (Cache::has('statistics-' . $month)) {
@@ -232,5 +198,31 @@ ORDER By `date`");
         $current = strlen($current) > 1 ? $current
             : '0' . $current;
         return [$current, $previous];
+    }
+
+    public function tempFunc()
+    {
+        $data = DB::select("SELECT date,
+       incoming.article        as art1,
+       tm,
+       name,
+       ROUND((sum / count), 2) as price,
+       (SELECT ROUND((sum / count), 2) as price
+        FROM incoming
+        WHERE article = art1
+          and shop <> 'ТЕРНОПІЛЬ'
+          and contractor <> 'ЕКСПАНСІЯ ТОВ'
+          and date BETWEEN date - INTERVAL 3 day
+            and date + INTERVAL 3 day
+        LIMIT 1) as price2, contractor
+FROM incoming
+         JOIN torg3 t on incoming.article = t.article
+WHERE shop = 'ТЕРНОПІЛЬ'
+  and `contractor` = 'ЕКСПАНСІЯ ТОВ'
+ORDER By `date`");
+        $data = array_filter($data, function ($d) {
+            return $d->price2 != 0;
+        });
+        return view('index2', compact('data'));
     }
 }

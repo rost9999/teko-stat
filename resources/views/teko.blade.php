@@ -25,7 +25,6 @@ $months = [
     <div class="row">
         <h1><a href="/">Теко-Трейд 2021 рік</a></h1>
 {{--                <h3 style="display: inline;">{{$months[$month]}} {{$shop}} {{$torg3}} {{$tm}} {{$article}}</h3>--}}
-        <h2><a href="{{back()->getTargetUrl()}}">Назад</a></h2>
     </div>
     <div class="row">
         <table class="table">

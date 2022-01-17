@@ -32,7 +32,7 @@ $months = [
             @foreach($months as $key => $months)
                 <tr>
                     <th scope="row">{{$key}}</th>
-                    <td><a href={{$key}}/>{{$months}}</a></td>
+                    <td><a href=statistics/{{$key}}/>{{$months}}</a></td>
                 </tr>
             @endforeach
             </tbody>
