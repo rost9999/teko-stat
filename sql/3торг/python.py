@@ -14,7 +14,7 @@ sql = "INSERT INTO  torg3 (article, name, tm, groupTT, torg3) \
 
 with open('3торг.txt', 'r', encoding='utf-8') as f:
     data = f.read().split('\n')
-    data = [d.split('\t')[1:] for d in data]
+    data = [d.split('\t') for d in data]
 newdata = []
 for d in data:
     if d[1] == '':

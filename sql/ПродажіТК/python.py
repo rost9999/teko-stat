@@ -9,8 +9,8 @@ mydb = mysql.connector.connect(
   database="teko-trade"
 )
 mycursor = mydb.cursor()
-sql = "INSERT INTO  orders (date, shop, article, count) \
-                                    VALUES (%s, %s, %s, %s)"
+sql = "INSERT INTO  orders (date, shop, article, count, sum) \
+                                    VALUES (%s, %s, %s, %s, %s)"
 
 
 def work(i):
@@ -25,15 +25,18 @@ def work(i):
         article = d[2]
         count = round(float(d[3].replace(' ', '')
                                 .replace(',', '.')), 2)
-        newdata.append([date, mag, article, count])
+        d[4] = '0' if d[4] == '' else d[4]
+        summ = round(float(d[4].replace(' ', '')
+                                .replace(',', '.')), 2)
+        newdata.append([date, mag, article, count, summ])
 
     val = [tuple(n) for n in newdata]
     mycursor.executemany(sql, val)
     mydb.commit()
     print(mycursor.rowcount, "was inserted.")
 
-work('00').
 for i in range(1,12+1):
     work(i)
+    
 
 print('work done')

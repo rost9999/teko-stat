@@ -93,7 +93,7 @@ class TekoController extends Controller
         $data = $this->getStatistics($current, $previous);
 
 
-        return view('teko', compact('data', 'month', 'shop', 'torg3'));
+        return view('shop', compact('data', 'month', 'shop', 'torg3'));
     }
 
     public function product($month, $shop, $torg3, $tm)

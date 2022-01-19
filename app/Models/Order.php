@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereShop($value)
  * @mixin \Eloquent
+ * @property float $sum
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereSum($value)
  */
 class Order extends Model
 {
