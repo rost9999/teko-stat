@@ -21,9 +21,11 @@ class OutController extends Controller
             ->orderBy('shop')
             ->pluck('shop');
         $data = [];
-        foreach ($shops as $shop) {
-            $data[$shop] = $this->outStock($shop, $day);
-        }
+//        foreach ($shops as $shop) {
+//            $data[$shop] = $this->outStock($shop, $day);
+//        }
+        $shop = 'БІЛЬЧЕ-ЗОЛОТЕ';
+        $data[$shop] = $this->outStock($shop, $day);
         return view('Out.shop', compact('data'));
     }
 
@@ -68,7 +70,9 @@ class OutController extends Controller
                 ->toArray();
             $days = $this->checkSequence($days);
             $data[$out['article']]['days'] = count($days) - 1;
-            $data[$out['article']]['fields'] = $this->getFields($out['article'], $shop);
+            if (count($days) > 2) {
+                $data[$out['article']]['fields'] = $this->getFields($out['article'], $shop);
+            }
         }
         $data = array_filter($data, function ($item) {
             return $item['days'] > 2;
