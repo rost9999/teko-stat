@@ -9,6 +9,7 @@
                 <thead>
                 <tr>
                     <th scope="col">Контрагент</th>
+                    <th scope="col">Артикул</th>
                     <th scope="col">Торгова Марка</th>
                     <th scope="col">Назва</th>
                 </tr>
@@ -20,9 +21,10 @@
                     </tr>
                     @foreach($values as $value)
                         <tr>
-                            <td nowrap>{{$value["fields"]["contractor"]}}</td>
-                            <td nowrap>{{$value["fields"]["tm"]}}</td>
-                            <td nowrap>{{$value["fields"]["name"]}}</td>
+                            <td nowrap>{{$value["shop"]}}</td>
+                            <td nowrap>{{$value["article"]}}</td>
+                            <td nowrap>{{$value["tm"]}}</td>
+                            <td nowrap>{{$value["name"]}}</td>
                             <td nowrap>{{$value["days"]}} днів</td>
                         </tr>
                     @endforeach

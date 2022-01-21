@@ -35,7 +35,7 @@ def work(name):
     mydb.commit()
     print(mycursor.rowcount, "was inserted.")
 
-work('01-18.01.2021')
+work('19-20.01.2021')
 ##for i in range(1,12+1):
 ##    work(i)
     

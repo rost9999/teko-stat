@@ -15,7 +15,7 @@ sql = "INSERT INTO  remainders (id, shop, article, date, count) \
 
 strToDate = datetime.datetime.strptime
 
-with open('12-2021.txt', 'r', encoding='utf-8') as f:
+with open('last2.txt', 'r', encoding='utf-8') as f:
     datatext = f.read().replace('\xa0', '').replace('\ufeff', '').replace(' ', '')
     data = datatext.split('\n')
     data = [d.split('\t') for d in data]
@@ -91,13 +91,14 @@ for shop in newResult:
     for article in newResult[shop]:
         for d in newResult[shop][article]:
             data.append([shop+article+str(d), shop, article, d, newResult[shop][article][d]])
-data
-# print('start work with db')
-# val = [tuple(n) for n in data]
-# n = 1000000
-# vals = [val[i:i+n] for i in range(0, len(val), n)]
-# for v in vals:
-#     mycursor.executemany(sql, v)
-#     mydb.commit()
-#     print(mycursor.rowcount, "was inserted.")
-# print('work done!')
+
+print('start work with db')
+val = [tuple(n) for n in data]
+n = 1000000
+vals = [val[i:i+n] for i in range(0, len(val), n)]
+for v in vals:
+ mycursor.executemany(sql, v)
+ mydb.commit()
+ print(mycursor.rowcount, "was inserted.")
+print('work done!')
+

@@ -15,7 +15,8 @@ use App\Http\Controllers\TekoController;
 |
 */
 
-Route::get('/outStock/', [OutController::class, 'index']);
+Route::get('/outStock/byShop', [OutController::class, 'byShop']);
+Route::get('/outStock/byContractor', [OutController::class, 'byContractor']);
 
 
 Route::get('/temp2', [TekoController::class, 'tempFunc']);
